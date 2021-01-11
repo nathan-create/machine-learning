@@ -247,6 +247,12 @@ class Matrix:
     def __eq__(self, matrix):
         return self.is_equal(matrix)
 
+    def __rmul__(self, scalar):
+        return self.scalar_multiply(scalar)
+
+    def __pow__(self, scalar):
+        return self.exponent(scalar)
+
     def cofactor_method_determinant(self):
         result = self.copy()
         deter = 0
