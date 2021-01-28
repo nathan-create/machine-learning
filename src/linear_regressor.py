@@ -4,8 +4,8 @@ from matrix import Matrix
 from dataframe import DataFrame
 
 class LinearRegressor:
-    def __init__(self, dataframe, dependant_var):
-        self.dataframe = dataframe
+    def __init__(self, data, dependant_var):
+        self.dataframe = data
         self.dep_var = dependant_var
         self.coefficients = self.calculate_coefficients()
 

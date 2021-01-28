@@ -155,13 +155,16 @@ class Matrix:
         matrix = self.copy()
         row_index = 0
         for col_index in range(matrix.num_cols):
-            if matrix.get_pivot_row(col_index) != None:
-                if matrix.get_pivot_row(col_index) != row_index:
-                    matrix = matrix.swap_rows(matrix.elements[matrix.get_pivot_row(col_index)], matrix.elements[row_index])
+            pivot = matrix.get_pivot_row(col_index)
+            if pivot != None:
+                if row_index not in range(matrix.num_rows):
+                    continue
+                if pivot != row_index:
+                    matrix = matrix.swap_rows(row_index, pivot)
                 matrix = matrix.normalize_row(row_index)
-                matrix = matrix.clear_below(row_index)
                 matrix = matrix.clear_above(row_index)
-                row_index+=1
+                matrix = matrix.clear_below(row_index)
+                row_index += 1
         return matrix
 
     def augment(self, matrix):
@@ -188,23 +191,26 @@ class Matrix:
         return Matrix(result)
 
     def inverse(self):
-        result = self.copy()
+        matrix = self.copy()
         
         identity = [[1 if num == num2 else 0 for num2 in range(self.num_cols)]for num in range(self.num_rows)]
                 
         identity_matrix = Matrix(identity)
+        reduced_matrix = matrix.augment(identity_matrix).rref()
+        result = []
 
-        if self.num_cols != self.num_rows:
+        if matrix.num_cols != matrix.num_rows:
             print("Matrix is not invertible as it is not square.")
-        elif [0 for num in range(self.num_cols)] in result.rref().elements:
-            print("Unable to get inverse of matrix as it is singular.")
-        else:
-            result_augmented = result.augment(identity_matrix)
-           
-            result_augmented = result_augmented.rref()
-           
-            result_augmented = result_augmented.get_cols([num for num in range(len(result.elements[0]),len(result_augmented.elements[0]))])
-            return result_augmented
+        for i in range(matrix.num_rows):
+            if reduced_matrix.get_pivot_row(i) != i:
+                print("Matrix does not have an inverse because it is singuar.")
+                return
+        for i in range(matrix.num_rows):
+            result.append([])
+            for j in range(matrix.num_cols, reduced_matrix.num_cols):
+                result[i].append(reduced_matrix.elements[i][j])
+        return Matrix(result)
+        
 
     def determinant(self):
         matrix = self.copy()
